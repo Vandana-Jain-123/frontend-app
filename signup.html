@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title></title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="">
+</head>
+
+<body>
+
+    <nav>
+        <a href="">home</a>
+        <a href="">Sigh</a>
+        <a href="">home</a>
+        <a href="">home</a>
+
+    </nav>
+
+    <div>
+        <form id="form">
+            <input id="name" type="text" placeholder="enter name"><br>
+            <input id="email" type="email" placeholder="enter email"><br>
+            <input id="password" type="password" placeholder="password">
+
+        </form>
+        <button id="btn">submit</button>
+
+
+
+        <table id="table" border="1px solid green">
+            <tr>
+                <th>name</th>
+                <th>email</th>
+                <th>password</th>
+                <th>Edit</th>
+                <th>Delete</th>
+            </tr>
+        </table>
+
+    </div>
+
+    <script>
+        const baseUrl =
+            "https://bright-absorbed-hook.glitch.me"
+
+        // SignUp Part
+        // *****************
+
+        let form = document.getElementById("form")
+
+        let submitData = document.getElementById("btn")
+        submitData.addEventListener("click", function (event) {
+            event.preventDefault()
+            let id = form.name.value
+            let name = form.name.value
+            let email = form.email.value
+            let password = form.password.value
+            const formUserData = { name, email, password }
+
+            postUserData(baseUrl, formUserData)
+            console.log(name, email, "kk")
+        })
+
+
+        // getAllUserData   fir geting user api data
+        getAllUserData(baseUrl)
+        function getAllUserData(url) {
+            fetch(`${url}/user`)
+                .then((res) => {
+                    return res.json()
+                })
+                .then((result) => {
+                    showData(result)
+
+                })
+                .catch((err) => {
+                    console.log("error")
+                })
+        }
+
+
+
+        // check User email present or not   for shignup 
+
+
+        function postUserData(url, userData) {
+            fetch(`${url}/user`)
+                .then((res) => {
+                    console.log(res, "res")
+                    return res.json()
+                })
+                .then((result) => {
+
+                    console.log(result, "watch data")
+                    let userD = result.filter((e, i) => {
+
+                        let useremail = document.getElementById("email")
+                        useremail = email.value
+                        console.log(useremail, "emailuser", e.email == email)
+                        return e.email == useremail
+
+                    })
+                    console.log(userD, "checkUserEamil exit")
+                    if (userD.length != 0) {
+                        alert("register already")
+                    } else {
+
+                        fetch(`${baseUrl}/user`, {
+                            method: "POST",
+                            headers: {
+                                "Content-Type": "application/json",
+                            },
+                            body: JSON.stringify(userData)
+                        }).then((result) => {
+
+                            alert("Signup Sucessfull");
+                            getAllUserData(baseUrl)
+                            // window.location.href = "login.html"
+                        })
+                    }
+
+                })
+                .catch((err) => {
+                    console.log(err)
+                    alert("Something went wrong, Please try again later");
+                })
+
+        }
+        //  for displaying in table      by show function  ///////////////////////////////////////////////////////////////////////////////
+
+        function showData(data) {
+            console.log(data, "dataaa")
+            let table = document.getElementById("table")
+            table.innerHTML = ""
+            data.forEach((ele, index) => {
+                let tr = document.createElement("tr")
+                let name = ele.name
+                let email = ele.email
+                let password = ele.password
+                let td1 = document.createElement("td")
+                td1.textContent = name
+                let td2 = document.createElement("td")
+                td2.textContent = email
+                let td3 = document.createElement("td")
+                td3.textContent = password
+
+
+                // edit  button  and  funcction call
+                let td4 = document.createElement("td")
+                let buttonEdit = document.createElement("button")
+                buttonEdit.textContent = "Edit"
+                buttonEdit.addEventListener("click", function () {
+                    console.log(baseUrl, "url check", "ele id", ele.id,)
+
+                    // document.getElementById("id").value = ele.id;
+                    // document.getElementById("name").value = ele.name;
+                    // document.getElementById("email").value = ele.email;
+                    // document.getElementById("password").value = ele.password;
+
+
+                    editUserData(baseUrl, ele.id, object)
+
+                })
+
+                td4.append(buttonEdit)
+
+                // delete button and function call
+
+
+                let td5 = document.createElement("td")
+                let buttonDelete = document.createElement("button")
+                buttonDelete.textContent = "Delete"
+                buttonDelete.addEventListener("click", function () {
+                    console.log(ele.id, "id")
+                    deleteUser(baseUrl, ele.id)
+                    getAllUserData(baseUrl)
+                })
+                td5.append(buttonDelete)
+
+
+                let td6 = document.createElement("td")
+                td6.textContent = index + 1
+
+                tr.append(td6, td1, td2, td3, td4, td5)
+                table.append(tr)
+            })
+        }
+
+        ////////////////////////////////////////////////////////////////////////////////////////////////////
+        // delete data function 
+        function deleteUser(baseUrl, id) {
+            fetch(`${baseUrl}/user/${id}`, {
+
+                method: "DELETE",
+
+                headers: {
+                    "Content-Type": "application/json"
+                },
+
+            })
+                .then((result) => {
+                    console.log(result, "delete result")
+                    getAllUserData(baseUrl)
+                })
+
+        }
+
+
+        // Edit Data function 
+        function editUserData(baseUrl, id, object) {
+            fetch(`${baseUrl}/user/${id}`, {
+                method: "PATCH",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(object)
+
+            }).then((res) => {
+
+                console.log(res, "data edit")
+                return res.json()
+
+            }).then((result) => {
+                console.log(result, "edit result value")
+                return result
+
+            }).catch((err) => {
+                console.log(err, "error ")
+            })
+
+        }
+
+
+    </script>
+</body>
+
+</html>
